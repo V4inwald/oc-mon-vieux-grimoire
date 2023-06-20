@@ -1,1 +1,6 @@
+#ignore all node modules
 node_modules
+
+#ignore dotenv environment variables file
+#(commented out so that the project works for the presentation)
+#.env
