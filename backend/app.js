@@ -1,6 +1,9 @@
 const express = require("express");
-const bookRoutes = require("./routes/book");
 const mongoose = require("mongoose");
+const bookRoutes = require("./routes/book");
+const userRoutes = require("./routes/user");
+
+require("dotenv").config();
 
 const app = express();
 
@@ -9,7 +12,7 @@ app.use(express.json());
 // Connect to DataBase
 mongoose
   .connect(
-    "mongodb+srv://MonVieuxGrimoire:6oMHryZBcVIz2YjFJna2@cluster0.q9dt6xu.mongodb.net/?retryWrites=true&w=majority",
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
@@ -29,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/api/auth", userRoutes);
 app.use("/api/books", bookRoutes);
 
 module.exports = app;
