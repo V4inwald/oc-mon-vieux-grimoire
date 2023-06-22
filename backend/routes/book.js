@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("../middleware/multer-config");
+const imageOptimization = require("../middleware/sharp-config");
 const bookCtrl = require("../controllers/book");
 const auth = require("../middleware/auth");
 
@@ -8,20 +10,18 @@ const router = express.Router();
 router.get("/", bookCtrl.getAllBooks);
 //sends back book with given ID
 router.get("/:id", bookCtrl.getOneBook);
+//TODO
 //sends back array of 3 books with best averagerating
-//TODO: controller
 router.get("/bestrating", bookCtrl.getBestRatedBooks);
 
 //creates book
-//TODO: add images support + auth
-router.post("/", /* auth, */ bookCtrl.createBook);
-//TODO: controller + auth
-router.post("/:id/rating", /*  auth,  */ bookCtrl.rateBook);
+router.post("/", auth, multer, imageOptimization, bookCtrl.createBook);
+//TODO
+router.post("/:id/rating", auth, bookCtrl.rateBook);
 
 //updates book
-//TODO: add images support + auth
-router.put("/:id", /*  auth, */ bookCtrl.modifyBook);
+router.put("/:id", auth, multer, imageOptimization, bookCtrl.modifyBook);
 
-router.delete("/:id", /* auth,  */ bookCtrl.deleteBook);
+router.delete("/:id", auth, bookCtrl.deleteBook);
 
 module.exports = router;
