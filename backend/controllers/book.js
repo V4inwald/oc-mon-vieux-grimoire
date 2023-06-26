@@ -10,6 +10,7 @@ exports.createBook = (req, res, next) => {
     ...bookObject,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.fileName}`,
+    averageRating: bookObject.ratings[0].grade,
   });
   book
     .save()
@@ -17,9 +18,31 @@ exports.createBook = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-//TODO
 exports.rateBook = (req, res, next) => {
-  console.log("TODO");
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      if (book.ratings.find((rating) => rating.userId === req.auth.userId)) {
+        res.status(401).json({ error: "Livre déja noté !" });
+      } else {
+        //add the new grade
+        //frontend sends it as "rating" instead of "grade"
+        book.ratings.push({ userId: req.auth.userId, grade: req.body.rating });
+        //calculate the averageRating
+        const totalRatings = book.ratings.reduce(
+          (total, rating) => total + rating.grade,
+          0
+        );
+        book.averageRating = totalRatings / book.ratings.length;
+        //save book and handle the answer
+        book
+          .save()
+          .then(() => res.status(201).json({ message: "Note ajoutée !" }))
+          .catch((error) => res.status(400).json({ error }));
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
 };
 
 //sends back array of books
@@ -38,7 +61,12 @@ exports.getOneBook = (req, res, next) => {
 
 //sends back array of 3 books with best averagerating
 exports.getBestRatedBooks = (req, res, next) => {
-  console.log("TODO");
+  Book.find()
+    //sort in descending number (bigger to smaller)
+    .sort({ averageRating: -1 })
+    .limit(3)
+    .then((books) => res.status(200).json(books))
+    .catch((error) => res.status(400).json({ error }));
 };
 
 //updates book
