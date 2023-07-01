@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-// Limits requests to 100/15min
+// Limits all requests to 100/15min
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
