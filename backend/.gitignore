@@ -2,5 +2,8 @@
 node_modules
 
 #ignore dotenv environment variables file
-#(commented out so that the project works for the presentation)
-#.env
+#.env file is in a zip archive protected by password
+.env
+
+#ignore all images (in the folder images)
+*-optimized.webp
