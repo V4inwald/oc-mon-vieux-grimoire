@@ -19,7 +19,7 @@ const bookSchema = mongoose.Schema({
       //MongoDB unique identifier of the user that rated the book
       userId: { type: String, required: false },
       //one grade given to a book
-      grade: { type: Number, required: false },
+      grade: { type: Number, required: false, min: 0, max: 5 },
     },
   ],
   //average rating of a book
