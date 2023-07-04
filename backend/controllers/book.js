@@ -21,8 +21,9 @@ exports.createBook = (req, res, next) => {
   });
   book
     .save()
-    .then(() => res.status(201).json({ message: "Livre enregistré !" }))
-    .catch((error) => res.status(400).json({ error }));
+    //status code 200 and not 201 because I'm sending back a message
+    .then(() => res.status(200).json({ message: "Livre enregistré !" }))
+    .catch((error) => res.status(500).json({ error }));
 };
 
 exports.rateBook = (req, res, next) => {
@@ -33,7 +34,8 @@ exports.rateBook = (req, res, next) => {
       } else if (
         book.ratings.find((rating) => rating.userId === req.auth.userId)
       ) {
-        res.status(401).json({ error: "Livre déja noté !" });
+        //forbidden because the book has already been rated
+        res.status(403).json({ error: "Livre déja noté !" });
       } else {
         //add the new grade
         //frontend sends it as "rating" instead of "grade"
@@ -47,12 +49,13 @@ exports.rateBook = (req, res, next) => {
         //save book and handle the answer
         book
           .save()
-          .then((book) => res.status(201).json(book))
-          .catch((error) => res.status(400).json({ error }));
+          //status code 200 and not 201 because I'm sending back the book
+          .then((book) => res.status(200).json(book))
+          .catch((error) => res.status(500).json({ error }));
       }
     })
     .catch((error) => {
-      res.status(400).json({ error });
+      res.status(500).json({ error });
     });
 };
 
@@ -90,7 +93,7 @@ exports.getBestRatedBooks = (req, res, next) => {
     .sort({ averageRating: -1 })
     .limit(3)
     .then((books) => res.status(200).json(books))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
 };
 
 //updates book
@@ -121,10 +124,10 @@ exports.modifyBook = (req, res, next) => {
         { ...bookObject, _id: req.params.id }
       )
         .then(() => res.status(200).json({ message: "Livre modifié!" }))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => {
-      res.status(400).json({ error });
+      res.status(500).json({ error });
     });
 };
 
@@ -142,7 +145,7 @@ exports.deleteBook = (req, res, next) => {
             .then(() => {
               res.status(200).json({ message: "Livre supprimé !" });
             })
-            .catch((error) => res.status(401).json({ error }));
+            .catch((error) => res.status(500).json({ error }));
         });
       }
     })
